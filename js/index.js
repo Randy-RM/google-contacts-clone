@@ -26,6 +26,16 @@ const handleRemoveStyle = (element, style) => {
   element.classList.remove(style);
 };
 
+const hideElement = (element) => {
+  handleRemoveStyle(element, "display-visible");
+  handleAddStyle(element, "display-none");
+};
+
+const displayElement = (element) => {
+  handleRemoveStyle(element, "display-none");
+  handleAddStyle(element, "display-visible");
+};
+
 const goBack = () => {
   handleRemoveStyle(contactFormContainer, "display-visible");
   handleAddStyle(contactFormContainer, "display-none");
