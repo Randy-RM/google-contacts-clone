@@ -36,6 +36,17 @@ const displayElement = (element) => {
   handleAddStyle(element, "display-visible");
 };
 
+const createDeleteButton = () => {
+  const buttonDeleteTaskItem = document.createElement("button");
+  const buttonDeleteText = document.createTextNode("Supprimer");
+  buttonDeleteTaskItem.appendChild(buttonDeleteText);
+  buttonDeleteTaskItem.addEventListener("click", (event) => {
+    event.preventDefault();
+    event.target.parentElement.remove();
+  });
+  return buttonDeleteTaskItem;
+};
+
 const goBackToContactList = () => {
   hideElement(contactFormContainer);
   displayElement(contactListContainer);
