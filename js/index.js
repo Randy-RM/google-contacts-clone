@@ -36,25 +36,16 @@ const displayElement = (element) => {
   handleAddStyle(element, "display-visible");
 };
 
-const goBack = () => {
-  handleRemoveStyle(contactFormContainer, "display-visible");
-  handleAddStyle(contactFormContainer, "display-none");
-  //
-  handleRemoveStyle(contactListContainer, "display-none");
-  handleAddStyle(contactListContainer, "display-visible");
+const goBackToContactList = () => {
+  hideElement(contactFormContainer);
+  displayElement(contactListContainer);
 
   if (contacts.length > 0) {
-    handleRemoveStyle(emptyContactList, "display-visible");
-    handleAddStyle(emptyContactList, "display-none");
-    //
-    handleRemoveStyle(contactList, "display-none");
-    handleAddStyle(contactList, "display-visible");
+    hideElement(emptyContactList);
+    displayElement(contactList);
   } else {
-    handleRemoveStyle(contactList, "display-visible");
-    handleAddStyle(contactList, "display-none");
-    //
-    handleRemoveStyle(emptyContactList, "display-none");
-    handleAddStyle(emptyContactList, "display-visible");
+    hideElement(contactList);
+    displayElement(emptyContactList);
   }
 };
 
@@ -72,16 +63,13 @@ burgerMenu.addEventListener("click", (event) => {
 
 addContactButtonList.forEach((addContactButton) => {
   addContactButton.addEventListener("click", () => {
-    handleRemoveStyle(contactListContainer, "display-visible");
-    handleAddStyle(contactListContainer, "display-none");
-    //
-    handleRemoveStyle(contactFormContainer, "display-none");
-    handleAddStyle(contactFormContainer, "display-visible");
+    hideElement(contactListContainer);
+    displayElement(contactFormContainer);
   });
 });
 
 arrowBack.addEventListener("click", () => {
-  goBack();
+  goBackToContactList();
 });
 
 saveContact.addEventListener("click", (event) => {
@@ -98,5 +86,5 @@ saveContact.addEventListener("click", (event) => {
   contactName.value = "";
 
   console.log(contacts);
-  goBack();
+  goBackToContactList();
 });
