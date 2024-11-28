@@ -15,10 +15,12 @@ const contactFormContainer = document.getElementById("contactFormContainer");
 const contactFirstName = document.getElementById("contactFirstName");
 const contactName = document.getElementById("contactName");
 const saveContact = document.getElementById("saveContact");
+
 const contacts = [];
 let tempContactIndex = null;
 
 // Callback functions
+
 const handleAddStyle = (element, style) => {
   element.classList.add(style);
 };
@@ -51,6 +53,7 @@ const createDeleteButton = () => {
 const goBackToContactList = () => {
   hideElement(contactFormContainer);
   displayElement(contactListContainer);
+
   if (contacts.length > 0) {
     hideElement(emptyContactList);
     displayElement(contactList);
@@ -63,7 +66,8 @@ const goBackToContactList = () => {
 const createContactRow = (contact, contactId) => {
   const contactBadge = contact.contactName[0].toUpperCase();
   return `
-  <td class="padding-top-bottom-1rem">
+                
+                <td class="padding-top-bottom-1rem">
                     <div class="flex items-center gap-1rem">
                       <p class="text-badge">${contactBadge}</p>
                       <p>${contact.contactName} ${contact.contactFirstName}</p>
@@ -74,51 +78,57 @@ const createContactRow = (contact, contactId) => {
                   <td class="padding-top-bottom-1rem">Maria Anders</td>
                   <td class="padding-top-bottom-1rem">
                     <div class="flex gap-1rem">
-                      <button id="${contactId}-update-button" class="btn btn-info addContactButton button-radius-07 flex items-center" type="button">
+                      <button id="${contactId}-update-btn" class="btn btn-info addContactButton button-radius-07 flex items-center" type="button">
                         Modifier
                       </button>
-                      <button id="${contactId}-delete-button" class="btn btn-danger addContactButton button-radius-07 flex items-center" type="button">
+                      <button id="${contactId}-delete-btn" class="btn btn-danger addContactButton button-radius-07 flex items-center" type="button">
                         Supprimer
                       </button>
                     </div>
-                  </td>
+                </td>
+                
   `;
 };
 
 const addContactsToContactTable = () => {
-  const contactRow = document.createElement("tr");
+  const contactTableRow = document.createElement("tr");
+  if (contacts.length > 0) {
+    contacts.forEach((contact, index) => {
+      const contactId = contact.contactName + contact.contactFirstName + index;
+      contactTableRow.setAttribute("id", contactId);
+      contactTableRow.innerHTML = createContactRow(contact, contactId);
+      contactListTable.appendChild(contactTableRow);
+      const contactItem = document.getElementById(contactId);
 
-  contacts.forEach((contact, index) => {
-    const contactId = contact.contactName + contact.contactFirstName + index;
-    const contactItem = document.getElementById(contactId);
-    contactRow.setAttribute("id", contactId);
-    contactRow.innerHTML = createContactRow(contact, contactId);
-    contactListTable.appendChild(contactRow);
+      const deleteContactButton = document.getElementById(
+        contactId + "-delete-btn"
+      );
+      deleteContactButton.addEventListener("click", () => {
+        contactItem.remove();
+        contacts.splice(index, 1);
+        console.log("contacts", contacts);
+        goBackToContactList();
+      });
 
-    const deleteContact = document.getElementById(contactId + "-delete-button");
-    deleteContact.addEventListener("click", () => {
-      contactItem.remove();
-      contacts.splice(index, 1);
-      if (contacts.length === 0) {
-        hideElement(contactList);
-        displayElement(emptyContactList);
-      }
-      console.log("contacts", contacts);
+      //
+      const updateContactButton = document.getElementById(
+        contactId + "-update-btn"
+      );
+      updateContactButton.addEventListener("click", () => {
+        contactFirstName.value = contact.contactFirstName;
+        contactName.value = contact.contactName;
+        tempContactIndex = index;
+        console.log("index", tempContactIndex);
+
+        hideElement(contactListContainer);
+        displayElement(contactFormContainer);
+      });
     });
-
-    const updateContact = document.getElementById(contactId + "-update-button");
-    updateContact.addEventListener("click", () => {
-      contactFirstName.value = contact.contactFirstName;
-      contactName.value = contact.contactName;
-      tempContactIndex = index;
-      console.log("tempContactIndex", tempContactIndex);
-      hideElement(contactListContainer);
-      displayElement(contactFormContainer);
-    });
-  });
+  }
 };
 
 // Add events
+
 burgerMenu.addEventListener("click", (event) => {
   if (sideBarMenu.classList.contains("display-none")) {
     handleRemoveStyle(sideBarMenu, "display-none");
@@ -131,7 +141,6 @@ burgerMenu.addEventListener("click", (event) => {
 
 addContactButtonList.forEach((addContactButton) => {
   addContactButton.addEventListener("click", () => {
-    tempContactIndex = null;
     hideElement(contactListContainer);
     displayElement(contactFormContainer);
   });
@@ -143,9 +152,10 @@ arrowBack.addEventListener("click", () => {
 
 saveContact.addEventListener("click", (event) => {
   event.preventDefault();
+
   const contact = {
-    contactFirstName: contactFirstName.value,
     contactName: contactName.value,
+    contactFirstName: contactFirstName.value,
   };
 
   if (tempContactIndex !== null) {
@@ -157,6 +167,7 @@ saveContact.addEventListener("click", (event) => {
 
   contactFirstName.value = "";
   contactName.value = "";
-  console.log("contacts : ", contacts);
+
+  console.log(contacts);
   goBackToContactList();
 });
