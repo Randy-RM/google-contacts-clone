@@ -15,30 +15,29 @@ const contactFormContainer = document.getElementById("contactFormContainer");
 const contactFirstName = document.getElementById("contactFirstName");
 const contactName = document.getElementById("contactName");
 const saveContact = document.getElementById("saveContact");
-let contacts = [];
+const contacts = [];
 let tempContactIndex = null;
 
 // Callback functions
-
-function handleAddStyle(element, style) {
+const handleAddStyle = (element, style) => {
   element.classList.add(style);
-}
+};
 
-function handleRemoveStyle(element, style) {
+const handleRemoveStyle = (element, style) => {
   element.classList.remove(style);
-}
+};
 
-function hideElement(element) {
+const hideElement = (element) => {
   handleRemoveStyle(element, "display-visible");
   handleAddStyle(element, "display-none");
-}
+};
 
-function displayElement(element) {
+const displayElement = (element) => {
   handleRemoveStyle(element, "display-none");
   handleAddStyle(element, "display-visible");
-}
+};
 
-function createDeleteButton() {
+const createDeleteButton = () => {
   const buttonDeleteTaskItem = document.createElement("button");
   const buttonDeleteText = document.createTextNode("Supprimer");
   buttonDeleteTaskItem.appendChild(buttonDeleteText);
@@ -47,29 +46,27 @@ function createDeleteButton() {
     event.target.parentElement.remove();
   });
   return buttonDeleteTaskItem;
-}
+};
 
-function goBackToContactList() {
+const goBackToContactList = () => {
   hideElement(contactFormContainer);
   displayElement(contactListContainer);
   if (contacts.length > 0) {
     hideElement(emptyContactList);
     displayElement(contactList);
-    // console.log(contacts);
   } else {
     hideElement(contactList);
     displayElement(emptyContactList);
-    // console.log(contacts);
   }
-}
+};
 
-function createContactRow(contact, contactId) {
-  const contactBadge = contact.contactFirstName[0].toUpperCase();
+const createContactRow = (contact, contactId) => {
+  const contactBadge = contact.contactName[0].toUpperCase();
   return `
-                  <td class="padding-top-bottom-1rem">
+  <td class="padding-top-bottom-1rem">
                     <div class="flex items-center gap-1rem">
                       <p class="text-badge">${contactBadge}</p>
-                      <p>${contact.contactFirstName} ${contact.contactName}</p>
+                      <p>${contact.contactName} ${contact.contactFirstName}</p>
                     </div>
                   </td>
                   <td class="padding-top-bottom-1rem">Maria Anders</td>
@@ -77,77 +74,51 @@ function createContactRow(contact, contactId) {
                   <td class="padding-top-bottom-1rem">Maria Anders</td>
                   <td class="padding-top-bottom-1rem">
                     <div class="flex gap-1rem">
-                      <button id="${contactId}-update-btn" class="btn btn-info addContactButton button-radius-07 flex items-center" type="button">
+                      <button id="${contactId}-update-button" class="btn btn-info addContactButton button-radius-07 flex items-center" type="button">
                         Modifier
                       </button>
-                      <button id="${contactId}-delete-btn" class="btn btn-danger addContactButton button-radius-07 flex items-center" type="button">
+                      <button id="${contactId}-delete-button" class="btn btn-danger addContactButton button-radius-07 flex items-center" type="button">
                         Supprimer
                       </button>
                     </div>
                   </td>
-    `;
-}
+  `;
+};
 
-function addDeleteEventToContactDeleteButton(
-  contactId,
-  contact,
-  contactItemTable
-) {
-  const deleteContactButton = document.getElementById(
-    contactId + "-delete-btn"
-  );
-  deleteContactButton.addEventListener("click", () => {
-    contacts = contacts.filter((contactFilter) => {
-      return contactFilter !== contact;
-    });
-    contactItemTable.remove();
-    goBackToContactList();
-    console.log(contacts);
-  });
-}
-
-function addUpdateEventToContactUpdateButton(
-  contactId,
-  contact,
-  index,
-  contactItemTable
-) {
-  const updateContactButton = document.getElementById(
-    contactId + "-update-btn"
-  );
-  updateContactButton.addEventListener("click", () => {
-    contactFirstName.value = contact.contactFirstName;
-    contactName.value = contact.contactName;
-    tempContactIndex = index;
-    hideElement(contactListContainer);
-    displayElement(contactFormContainer);
-    console.log(contacts);
-  });
-}
-
-function addContactsToContactTable() {
-  //
+const addContactsToContactTable = () => {
   const contactRow = document.createElement("tr");
 
   contacts.forEach((contact, index) => {
-    const contactId = contact.contactFirstName + contact.contactName + index;
+    const contactId = contact.contactName + contact.contactFirstName + index;
+    const contactItem = document.getElementById(contactId);
     contactRow.setAttribute("id", contactId);
-    //
     contactRow.innerHTML = createContactRow(contact, contactId);
     contactListTable.appendChild(contactRow);
-    //
-    const contactItem = document.getElementById(contactId);
 
-    //
-    addDeleteEventToContactDeleteButton(contactId, contact, contactItem);
+    const deleteContact = document.getElementById(contactId + "-delete-button");
+    deleteContact.addEventListener("click", () => {
+      contactItem.remove();
+      contacts.splice(index, 1);
+      if (contacts.length === 0) {
+        hideElement(contactList);
+        displayElement(emptyContactList);
+      }
+      console.log("contacts", contacts);
+    });
 
-    //
-    addUpdateEventToContactUpdateButton(contactId, contact, index, contactItem);
+    const updateContact = document.getElementById(contactId + "-update-button");
+    updateContact.addEventListener("click", () => {
+      contactFirstName.value = contact.contactFirstName;
+      contactName.value = contact.contactName;
+      tempContactIndex = index;
+      console.log("tempContactIndex", tempContactIndex);
+      hideElement(contactListContainer);
+      displayElement(contactFormContainer);
+    });
   });
-}
+};
 
 // Add events
-
 burgerMenu.addEventListener("click", (event) => {
   if (sideBarMenu.classList.contains("display-none")) {
     handleRemoveStyle(sideBarMenu, "display-none");
@@ -160,6 +131,7 @@ burgerMenu.addEventListener("click", (event) => {
 
 addContactButtonList.forEach((addContactButton) => {
   addContactButton.addEventListener("click", () => {
+    tempContactIndex = null;
     hideElement(contactListContainer);
     displayElement(contactFormContainer);
   });
@@ -175,15 +147,16 @@ saveContact.addEventListener("click", (event) => {
     contactFirstName: contactFirstName.value,
     contactName: contactName.value,
   };
+
   if (tempContactIndex !== null) {
     contacts[tempContactIndex] = contact;
-    // invocation de la fonction de mis à jour de l'interface
   } else {
     contacts.push(contact);
     addContactsToContactTable();
   }
+
   contactFirstName.value = "";
   contactName.value = "";
-
+  console.log("contacts : ", contacts);
   goBackToContactList();
 });
